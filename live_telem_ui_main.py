@@ -33,6 +33,8 @@ position gear better?
 format
 format
 format
+if i want long formatted graphs might ahve to do two seperate figures with two seperate animtation functions......
+^^^look into the function args for the thing
 
 """
 
