@@ -16,7 +16,7 @@ import time
 LARGEFONT =("Verdana", 35) 
 SMALLFONT =("calibre",10)
 #style.use("ggplot")
-f = Figure(figsize=(5,5), dpi=100)
+f = Figure()
 a = f.add_subplot(111)
 seed(time.time())
 def updateData():
@@ -57,7 +57,18 @@ class LiveTelemUI(tk.Tk):
 		container = tk.Frame(self) 
 		container.pack(side = "top", fill = "both", expand = True) 
 		container.grid_rowconfigure(0, weight = 1) 
-		container.grid_columnconfigure(0, weight = 1) 
+		container.grid_columnconfigure(0, weight = 1)
+
+		# creating a menu bar
+		menubar = tk.Menu(container)
+
+		#file menu
+		filemenu = tk.Menu(menubar, tearoff=0)
+		filemenu.add_command(label="Exit", command = quit)
+		menubar.add_cascade(label="File", menu=filemenu)
+
+		tk.Tk.config(self, menu=menubar)
+
 
 		# initializing frames to an empty array 
 		self.frames = {}
@@ -95,6 +106,7 @@ class StartPage(tk.Frame):
 
 def main():
 	app = LiveTelemUI()
+	app.geometry("1280x720")
 	ani = animation.FuncAnimation(f, animate, interval=500)
 	app.mainloop()
 
