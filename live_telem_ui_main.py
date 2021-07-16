@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
+from typing import Container
 import matplotlib
 from matplotlib import figure
 matplotlib.use("TkAgg")
@@ -45,10 +46,11 @@ LARGEFONT =("Verdana", 35)
 SMALLFONT =("calibre",10)
 
 # global figure to get rid of later
-f = Figure()
-#ax1 = f.add_subplot(111)
-f, ((ax1, ax2, ax3, ax4),(ax5, ax6, ax7, ax8)) = plt.subplots(2,4, sharex=True)
-
+# f = Figure()
+# #ax1 = f.add_subplot(111)
+# # f, (ax1,ax2) = plt.subplots(2,1, sharex=True)
+# # f, ((ax1, ax2, ax3, ax4),(ax5, ax6, ax7, ax8)) = plt.subplots(2,4, sharex=True)
+# f, ((ax1, ax2, ax3, ax4,ax5, ax6, ax7, ax8, ax9)) = plt.subplots(9,1, sharex=True)
 # f1 = Figure()
 # f1, (ax5, ax6, ax7, ax8) = plt.subplots(4, sharex=True)
 # ax1 = f.add_subplot(311)
@@ -69,6 +71,10 @@ f, ((ax1, ax2, ax3, ax4),(ax5, ax6, ax7, ax8)) = plt.subplots(2,4, sharex=True)
 # fuelPressure = f.add_subplot(513, sharex=inletManifoldPressure)
 # engineOilPressure = f.add_subplot(514, sharex=fuelPressure)
 # coolantTemp = f.add_subplot(515, sharex=engineOilPressure)
+def formatGraph(fig, yLabel, yLim):
+	fig.set_ylabel(yLabel)
+	fig.set_ylim(yLim)
+
 
 def updateData():
 	file = open("sampleData.txt", "r+")
@@ -79,7 +85,7 @@ def updateData():
 	file.close()
 	return x
 
-def animate(i):
+def animate(i, app):
 	xValue = updateData()
 	pullData = open("sampleData.txt","r").read()
 	dataList = pullData.split('\n')
@@ -92,10 +98,13 @@ def animate(i):
 			yList.append(int(y))
 	#want to test plotting three differetn sets of data at the same time.....ugh
 	#could jsut generate three random numbers......
-	for subplot in f.get_axes():
+	for subplot in app.f.get_axes():
 		# subplot.clear()
 		subplot.cla()
 		subplot.plot(xList[xValue-10:],yList[xValue-10:])
+	
+	#format Graphs
+	formatGraph(app.ax1, "Ax1's \ngraph \ny label", (0,10))
 		# ((xValue%3+1)*10)
 	# ax1.clear()
 	# ax1.plot(xList[xValue-10:],yList[xValue-10:])
@@ -106,6 +115,10 @@ class LiveTelemUI(tk.Tk):
 		# __init__ function for class Tk 
 		tk.Tk.__init__(self)
 		tk.Tk.wm_title(self, "Live Telemetry")
+
+		#figure
+		self.f = Figure()
+		self.f, ((self.ax1, self.ax2, self.ax3, self.ax4,self.ax5, self.ax6, self.ax7, self.ax8, self.ax9)) = plt.subplots(9,1, sharex=True)
 
 		# creating a container 
 		container = tk.Frame(self) 
@@ -142,25 +155,19 @@ class LiveTelemUI(tk.Tk):
 class StartPage(tk.Frame):
 	def __init__(self, parent, controller):
 		tk.Frame.__init__(self, parent)
-		mainLabel = ttk.Label(self, text = "StartPage", font = LARGEFONT)
-		mainLabel.grid(row=0, column = 0, padx = 10, pady=10)
+		# mainLabel = ttk.Label(self, text = "StartPage", font = LARGEFONT)
+		# mainLabel.grid(row=0, column = 0, padx = 10, pady=10)
 
 		self.columnconfigure(0, weight=1)
 		self.rowconfigure(0, weight=1)
 
 		#displaying the graph in window
-		canvas = FigureCanvasTkAgg(f, self)
+		canvas = FigureCanvasTkAgg(controller.f, self)
 		canvas.draw()
-		canvas.get_tk_widget().grid(row=1, column = 0, padx = 10, pady=10, columnspan=4, sticky=(N, S, E, W))
-		canvas.get_tk_widget().columnconfigure(0, weight=1)
-		canvas.get_tk_widget().rowconfigure(1, weight=1)
+		canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)#grid(row=1, column = 0, padx = 10, pady=10, columnspan=4, sticky=(N, S, E, W))
+		# canvas.get_tk_widget().columnconfigure(0, weight=1)
+		# canvas.get_tk_widget().rowconfigure(1, weight=1)
 
-		#Gear Label
-		gearLabel = ttk.Label(self, text = "Gear: ", font = LARGEFONT)
-		gearLabel.grid(row=2, column = 0, padx = 10, pady=10)
-
-		gearValue = ttk.Label(self, text = str(randint(1,5)), font = LARGEFONT)
-		gearValue.grid(row=2, column = 1, padx = 10, pady=10)
 
 
 #main
@@ -169,7 +176,7 @@ def main():
 	app.geometry("1280x760")
 	#start in fullscreen windowed
 	# app.state('zoomed')
-	ani = animation.FuncAnimation(f, animate,interval=500)
+	ani = animation.FuncAnimation(app.f, animate,fargs = (app,),interval=500)
 	app.mainloop()
 	
 
