@@ -79,6 +79,7 @@ def animate(i, app):
 		subplot.plot(xList[xValue-10:],yList[xValue-10:],colors[i]+markers[i])
 		i=i+1
 	
+	#if i put all the titles in a list then i can just use the for loop above to do all the formatting
 	#format Graphs
 	formatGraph(app.ax1, "Ax1's \ngraph \ny label", (-1,11))
 	formatGraph(app.ax2, "Ax2's \ngraph \ny label", (0,10))
