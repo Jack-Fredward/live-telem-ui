@@ -28,14 +28,9 @@ TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
 TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
 TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
 
-write function for each subplots formatting for each time it is cleared need to put formatting back on
-make a second figure with other subplots for more information
-position gear better?
 format
 format
 format
-if i want long formatted graphs might ahve to do two seperate figures with two seperate animtation functions......
-^^^look into the function args for the thing
 
 """
 
@@ -44,47 +39,26 @@ if i want long formatted graphs might ahve to do two seperate figures with two s
 # tk styling
 LARGEFONT =("Verdana", 35) 
 SMALLFONT =("calibre",10)
+# matplotlib graph styling
+# style.use("")
+style.use("bmh")
 
-# global figure to get rid of later
-# f = Figure()
-# #ax1 = f.add_subplot(111)
-# # f, (ax1,ax2) = plt.subplots(2,1, sharex=True)
-# # f, ((ax1, ax2, ax3, ax4),(ax5, ax6, ax7, ax8)) = plt.subplots(2,4, sharex=True)
-# f, ((ax1, ax2, ax3, ax4,ax5, ax6, ax7, ax8, ax9)) = plt.subplots(9,1, sharex=True)
-# f1 = Figure()
-# f1, (ax5, ax6, ax7, ax8) = plt.subplots(4, sharex=True)
-# ax1 = f.add_subplot(311)
-# ax1.set_xlabel("Marks")
-# ax1.set_ylabel("Students")
-# ax1.set_title("Graph_Tk")
-# ax1.grid()
-# ax2 = f.add_subplot(312, sharex=ax1)
-# ax3 = f.add_subplot(313, sharex=ax1)
-
-
-
-
-# a = f.add_subplot(311)
-# b = f.add_subplot(312)
-# engineSpeed = f.add_subplot(511)
-# inletManifoldPressure = f.add_subplot(512, sharex=engineSpeed)
-# fuelPressure = f.add_subplot(513, sharex=inletManifoldPressure)
-# engineOilPressure = f.add_subplot(514, sharex=fuelPressure)
-# coolantTemp = f.add_subplot(515, sharex=engineOilPressure)
+#format the graph with the given ylabel and ylimit axis
 def formatGraph(fig, yLabel, yLim):
 	fig.set_ylabel(yLabel)
 	fig.set_ylim(yLim)
 
-
+#update the data to be displayed placeholder for now
 def updateData():
 	file = open("sampleData.txt", "r+")
 	x=len(file.readlines())+1
-	# print(x)
 	y = randint(0, 10)
 	file.write(str(x)+','+str(y)+'\n')
 	file.close()
 	return x
 
+#animate the graphs (make them live)
+#gets data and appends to display lists then plots and formats
 def animate(i, app):
 	xValue = updateData()
 	pullData = open("sampleData.txt","r").read()
@@ -96,18 +70,30 @@ def animate(i, app):
 			x, y = eachLine.split(',')
 			xList.append(int(x))
 			yList.append(int(y))
-	#want to test plotting three differetn sets of data at the same time.....ugh
-	#could jsut generate three random numbers......
+	i=0
+	colors = ['b', 'g', 'r', 'k', 'y','b', 'g', 'r', 'k',]
+	markers = ['o-','.-','o--','.--','s-','s:','*--','|-','_-']
 	for subplot in app.f.get_axes():
-		# subplot.clear()
+		
 		subplot.cla()
-		subplot.plot(xList[xValue-10:],yList[xValue-10:])
+		subplot.plot(xList[xValue-10:],yList[xValue-10:],colors[i]+markers[i])
+		i=i+1
 	
 	#format Graphs
-	formatGraph(app.ax1, "Ax1's \ngraph \ny label", (0,10))
-		# ((xValue%3+1)*10)
-	# ax1.clear()
-	# ax1.plot(xList[xValue-10:],yList[xValue-10:])
+	formatGraph(app.ax1, "Ax1's \ngraph \ny label", (-1,11))
+	formatGraph(app.ax2, "Ax2's \ngraph \ny label", (0,10))
+	formatGraph(app.ax3, "Ax3's \ngraph \ny label", (0,10))
+	formatGraph(app.ax4, "Ax4's \ngraph \ny label", (-5,5))
+	formatGraph(app.ax5, "Ax5's \ngraph \ny label", (0,10))
+	formatGraph(app.ax6, "Ax6's \ngraph \ny label", (0,5))
+	formatGraph(app.ax7, "Ax7's \ngraph \ny label", (0,10))
+	formatGraph(app.ax8, "Ax8's \ngraph \ny label", (5,10))
+	formatGraph(app.ax9, "Ax9's \ngraph \ny label", (0,10))
+	app.ax9.set_xlabel("Data Point")
+	# app.ax9.set_xticks(rotation=45)
+	plt.setp(app.ax9.get_xticklabels(), rotation=45, ha="right",
+         rotation_mode="anchor")
+
 
 class LiveTelemUI(tk.Tk):
 	# __init__ function for class tkinterApp 
@@ -155,18 +141,10 @@ class LiveTelemUI(tk.Tk):
 class StartPage(tk.Frame):
 	def __init__(self, parent, controller):
 		tk.Frame.__init__(self, parent)
-		# mainLabel = ttk.Label(self, text = "StartPage", font = LARGEFONT)
-		# mainLabel.grid(row=0, column = 0, padx = 10, pady=10)
-
-		self.columnconfigure(0, weight=1)
-		self.rowconfigure(0, weight=1)
-
-		#displaying the graph in window
+		#displaying the graph in window, pack to allow for just the graph and expand and fill to do just that to the window
 		canvas = FigureCanvasTkAgg(controller.f, self)
 		canvas.draw()
-		canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)#grid(row=1, column = 0, padx = 10, pady=10, columnspan=4, sticky=(N, S, E, W))
-		# canvas.get_tk_widget().columnconfigure(0, weight=1)
-		# canvas.get_tk_widget().rowconfigure(1, weight=1)
+		canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 
 
 
