@@ -77,6 +77,7 @@ def animate(i, app):
 		
 		subplot.cla()
 		subplot.plot(xList[xValue-10:],yList[xValue-10:],colors[i]+markers[i])
+		# subplot.plot(xList,yList,colors[i]+markers[i])
 		i=i+1
 	
 	#if i put all the titles in a list then i can just use the for loop above to do all the formatting
@@ -121,8 +122,24 @@ class LiveTelemUI(tk.Tk):
 		filemenu.add_command(label="Exit", command = quit)
 		menubar.add_cascade(label="File", menu=filemenu)
 
-		tk.Tk.config(self, menu=menubar)
 
+		#graph selection
+		minimap = IntVar(value=1)
+		darkmode = IntVar(value=1)
+
+		view = Menu(menubar, tearoff=0)
+		view.add_checkbutton(label="show minimap", onvalue=1, offvalue=0, variable=minimap, command= lambda: str(minimap.get()))
+		view.add_checkbutton(label="Darkmode", onvalue=1, offvalue=0, variable=darkmode, command= lambda: str(darkmode.get()))
+		menubar.add_cascade(label='View', menu=view)
+		# view.index("show minimap").select()
+		# self.chkmenu.invoke(self.chkmenu.index('C'))
+		# view.activate(view.index("show minimap"))
+		# view.activate(view.index("Darkmode"))
+
+
+
+		tk.Tk.config(self, menu=menubar)
+		# view.invoke(view.index("show minimap"))
 
 		# initializing frames to an empty array 
 		self.frames = {}
@@ -146,6 +163,7 @@ class StartPage(tk.Frame):
 		canvas = FigureCanvasTkAgg(controller.f, self)
 		canvas.draw()
 		canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+
 
 
 
